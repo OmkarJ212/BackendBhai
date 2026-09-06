@@ -1,0 +1,49 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+  attributes:
+    actions:
+      - key: http.request.header.authorization
+        action: hash
+      - key: http.request.header.cookie
+        action: hash
+      - key: http.request.header.x-api-key
+        action: hash
+      - key: http.request.header.x-auth-token
+        action: hash
+
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - set(attributes["http.request.header.authorization"], "**REDACTED**") where attributes["http.request.header.authorization"] != nil
+          - set(attributes["http.request.header.cookie"], "**REDACTED**") where attributes["http.request.header.cookie"] != nil
+          - set(attributes["http.request.header.x-api-key"], "**REDACTED**") where attributes["http.request.header.x-api-key"] != nil
+          - set(attributes["http.request.header.x-auth-token"], "**REDACTED**") where attributes["http.request.header.x-auth-token"] != nil
+
+exporters:
+  otlphttp:
+    endpoint: "http://devtools-server:4001/api/v1/otlp"
+    tls:
+      insecure: true
+  logging:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [attributes, transform, batch]
+      exporters: [otlphttp, logging]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp, logging]

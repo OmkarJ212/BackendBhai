@@ -1,0 +1,21 @@
+{
+  "name": "@backendbhai/payment-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Payment Service microservice skeleton for BackendBhai demo store",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@devtools/services-shared": "workspace:*",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.2"
+  }
+}
